@@ -26,19 +26,17 @@ lexeme *find_int_constant(char *seq)
     a[1] = find_hex_constant(seq);
     return get_longest(a, 3);
 }
-
-int get_signal1(char a)
-{
-    if (a == '0')
-        return ZERO;
-    else if (isdigit(a))
-        return DIGIT;
-    else
-        return OTHER;
-}
-
 lexeme *find_dec_constant(char *seq)
 {
+    int get_signal(char a)
+    {
+        if (a == '0')
+            return ZERO;
+        else if (isdigit(a))
+            return DIGIT;
+        else
+            return OTHER;
+    }
     static state transitions[MAX_STATES][MAX_SIGNALS] = {
         [STATE_0][OTHER] = STATE_9,
         [STATE_0][ZERO] = STATE_9,
@@ -50,11 +48,20 @@ lexeme *find_dec_constant(char *seq)
 
     static state finals[1] = {STATE_1};
 
-    return reg_exp(seq, get_signal1, transitions, INT_CONSTANT, finals, 1);
+    return reg_exp(seq, get_signal, transitions, INT_CONSTANT, finals, 1);
 }
 
 lexeme *find_oct_constant(char *seq)
 {
+    int get_signal(char a)
+    {
+        if (a == '0')
+            return ZERO;
+        else if (isdigit(a))
+            return DIGIT;
+        else
+            return OTHER;
+    }
     static state transitions[MAX_STATES][MAX_SIGNALS] = {
         [STATE_0][OTHER] = STATE_9,
         [STATE_0][ZERO] = STATE_1,
@@ -66,25 +73,25 @@ lexeme *find_oct_constant(char *seq)
 
     static state finals[1] = {STATE_1};
 
-    return reg_exp(seq, get_signal1, transitions, INT_CONSTANT, finals, 1);
-}
-
-int get_signal2(char a)
-{
-    if (a == '0')
-        return ZERO;
-    else if (a == 'X' || a == 'x')
-        return X;
-    else if (isdigit(a) ||
-             (a > 'a' && a < 'f') ||
-             (a > 'A' && a < 'F'))
-        return DIGIT;
-    else
-        return OTHER;
+    return reg_exp(seq, get_signal, transitions, INT_CONSTANT, finals, 1);
 }
 
 lexeme *find_hex_constant(char *seq)
 {
+    int get_signal(char a)
+    {
+        if (a == '0')
+            return ZERO;
+        else if (a == 'X' || a == 'x')
+            return X;
+        else if (isdigit(a) ||
+                 (a > 'a' && a < 'f') ||
+                 (a > 'A' && a < 'F'))
+            return DIGIT;
+        else
+            return OTHER;
+    }
+
     static state transitions[MAX_STATES][MAX_SIGNALS] = {
         [STATE_0][OTHER] = STATE_9,
         [STATE_0][ZERO] = STATE_1,
@@ -102,6 +109,6 @@ lexeme *find_hex_constant(char *seq)
 
     static state finals[1] = {STATE_2};
 
-    return reg_exp(seq, get_signal2, transitions, INT_CONSTANT, finals, 1);
+    return reg_exp(seq, get_signal, transitions, INT_CONSTANT, finals, 1);
 }
 

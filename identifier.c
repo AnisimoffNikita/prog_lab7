@@ -13,7 +13,7 @@ typedef enum
     OTHER
 } signal;
 
-int get_signal(char a)
+static int get_signal(char a)
 {
     if (isdigit(a))
         return DIGIT;

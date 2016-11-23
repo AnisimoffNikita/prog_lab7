@@ -51,7 +51,7 @@ lexeme *find_float_constant(char *seq)
 
     static state finals[2] = {STATE_1, STATE_2};
 
-    return reg_exp(seq, get_signal, transitions, INT_CONSTANT, finals, 2);
+    return reg_exp(seq, get_signal, transitions, FLOAT_CONSTANT, finals, 2);
 }
 
 lexeme *find_scientific_constant(char *seq)
@@ -103,5 +103,5 @@ lexeme *find_scientific_constant(char *seq)
 
     static state finals[1] = {STATE_4};
 
-    return reg_exp(seq, get_signal, transitions, INT_CONSTANT, finals, 1);
+    return reg_exp(seq, get_signal, transitions, FLOAT_CONSTANT, finals, 1);
 }
