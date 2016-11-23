@@ -27,4 +27,7 @@ lexeme *get_longest(lexeme *l[], int n);
 lexeme *reg_exp(char *seq, get_signal_func get_signal, state transitions[MAX_STATES][MAX_SIGNALS],
                     lexeme_type type, state *finals, int n);
 
+lexeme *reg_exp_compare(char *seq,
+                        lexeme_type type, char **keys, int n);
+
 #endif // REG_EXP_H

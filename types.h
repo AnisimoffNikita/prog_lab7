@@ -8,7 +8,10 @@ typedef enum
     KEYWORD,
     IDENTIFIER,
     INT_CONSTANT,
-    FLOAT_CONSTANT
+    FLOAT_CONSTANT,
+    CHAR_CONSTANT,
+    STRING_LITERAL,
+    PUNCTUATOR
 } lexeme_type;
 
 typedef struct

@@ -44,3 +44,58 @@ lexeme *reg_exp(char *seq, get_signal_func get_signal, state transitions[MAX_STA
         return NULL;
 }
 
+
+//да, можно было тупо перебрать все слова, но ведь через регулярки веселее :D
+typedef enum
+{
+    OK,
+    ERROR
+} compare_signals;
+
+static char* str_equal(char *a, char *b)
+{
+    char *s = b;
+    while (a && b)
+    {
+        if (*a != *b)
+            return NULL;
+        a++;
+        b++;
+    }
+    return s;
+}
+
+static int get_signal(char *w, char **buf, char **keys, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        *buf = str_equal(w, keys[i]);
+        if (*buf)
+            return OK;
+    }
+
+    return ERROR;
+}
+
+lexeme *reg_exp_compare(char *seq, lexeme_type type, char **keys, int n)
+{
+    state st = STATE_0;
+
+    static state transitions[MAX_STATES][MAX_SIGNALS] = {
+        [STATE_0][OK] = STATE_1,
+        [STATE_0][ERROR] = STATE_9
+    };
+
+    char* buf;
+    int sg = get_signal(seq, &buf, keys, n);
+    st = transitions[st][sg];
+
+    if (st == STATE_1)
+    {
+        lexeme *l = create_lexeme(buf, type);
+        return l;
+    }
+    else
+        return NULL;
+}
+
