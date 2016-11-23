@@ -20,13 +20,13 @@ static int is_escape(char a)
             a == '\"' ||
             a == '\?' ||
             a == '\\' ||
-            a == '\a' ||
-            a == '\b' ||
-            a == '\f' ||
-            a == '\n' ||
-            a == '\r' ||
-            a == '\t' ||
-            a == '\v';
+            a == 'a' ||
+            a == 'b' ||
+            a == 'f' ||
+            a == 'n' ||
+            a == 'r' ||
+            a == 't' ||
+            a == 'v';
 }
 
 static int get_signal(char a)
@@ -73,5 +73,5 @@ lexeme *find_string_literal(char *seq)
 
     static state finals[1] = {STATE_3};
 
-    return reg_exp(seq, get_signal, transitions, INT_CONSTANT, finals, 1);
+    return reg_exp(seq, get_signal, transitions, STRING_LITERAL, finals, 1);
 }
