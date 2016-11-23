@@ -3,24 +3,17 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-enum _signal
+#include "reg_exp.h"
+
+typedef enum
 {
     DIGIT,
     ALPHA,
     _,
     OTHER
-};
-typedef enum _signal signal;
+} signal;
 
-enum _state
-{
-    INITIAL,
-    FINISH,
-    FAIL
-};
-typedef enum _state state;
-
-static signal get_signal(char a)
+int get_signal(char a)
 {
     if (isdigit(a))
         return DIGIT;
@@ -34,34 +27,18 @@ static signal get_signal(char a)
 
 lexeme *find_identifier(char *seq)
 {
-    static state transitions[3][4] = {
-        [INITIAL][OTHER] = FAIL,
-        [INITIAL][DIGIT] = FAIL,
-        [INITIAL][ALPHA] = FINISH,
-        [INITIAL][_] = FINISH,
-        [FINISH][OTHER] = FAIL,
-        [FINISH][DIGIT] = FINISH,
-        [FINISH][ALPHA] = FINISH,
-        [FINISH][_] = FINISH
+    static state transitions[MAX_STATES][MAX_SIGNALS] = {
+        [STATE_0][OTHER] = STATE_9,
+        [STATE_0][DIGIT] = STATE_9,
+        [STATE_0][ALPHA] = STATE_1,
+        [STATE_0][_] = STATE_1,
+        [STATE_1][OTHER] = STATE_9,
+        [STATE_1][DIGIT] = STATE_1,
+        [STATE_1][ALPHA] = STATE_1,
+        [STATE_1][_] = STATE_1
     };
 
-    state st = INITIAL;
-    int len = 0;
-    char buf[LEXEME_SIZE];
-    while (st != FAIL)
-    {
-        signal sg = get_signal(*seq);
-        st = transitions[st][sg];
-        buf[len++] = *seq;
-        seq++;
-    }
+    static state finals[1] = {STATE_1};
 
-    if (len > 1)
-    {
-        buf[len] = 0;
-        lexeme *l = create_lexeme(buf, IDENTIFIER);
-        return l;
-    }
-    else
-        return NULL;
+    return reg_exp(seq, get_signal, transitions, IDENTIFIER, finals, 1);
 }

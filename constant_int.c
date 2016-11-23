@@ -1,23 +1,17 @@
-#include "int_constant.h"
+#include "constant_int.h"
 
 #include <ctype.h>
 #include <stdlib.h>
+
+#include "reg_exp.h"
 
 typedef enum
 {
     ZERO,
     DIGIT,
-    ALPHA,
+    X,
     OTHER
 } signal;
-
-typedef enum
-{
-    INITIAL,
-    X,
-    FINAL,
-    FAIL
-} state;
 
 
 lexeme *find_dec_constant(char *seq);
@@ -26,10 +20,14 @@ lexeme *find_hex_constant(char *seq);
 
 lexeme *find_int_constant(char *seq)
 {
-
+    lexeme *a[3];
+    a[0] = find_dec_constant(seq);
+    a[1] = find_oct_constant(seq);
+    a[1] = find_hex_constant(seq);
+    return get_longest(a, 3);
 }
 
-signal get_dec_signal(char a)
+int get_signal1(char a)
 {
     if (a == '0')
         return ZERO;
@@ -41,64 +39,69 @@ signal get_dec_signal(char a)
 
 lexeme *find_dec_constant(char *seq)
 {
-    static state transitions[3][4] = {
-        [INITIAL][OTHER] = FAIL,
-        [INITIAL][ZERO] = FAIL,
-        [INITIAL][DIGIT] = FINAL,
-        [FINAL][OTHER] = FAIL,
-        [FINAL][ZERO] = FINAL,
-        [FINAL][DIGIT] = FINAL,
+    static state transitions[MAX_STATES][MAX_SIGNALS] = {
+        [STATE_0][OTHER] = STATE_9,
+        [STATE_0][ZERO] = STATE_9,
+        [STATE_0][DIGIT] = STATE_1,
+        [STATE_1][OTHER] = STATE_2,
+        [STATE_1][ZERO] = STATE_1,
+        [STATE_1][DIGIT] = STATE_1
     };
 
-    state st = INITIAL;
-    int len = 0;
-    char buf[LEXEME_SIZE];
-    while (st != FAIL)
-    {
-        signal sg = get_dec_signal(*seq);
-        st = transitions[st][sg];
-        buf[len++] = *seq;
-        seq++;
-    }
+    static state finals[1] = {STATE_1};
 
-    if (len > 1)
-    {
-        buf[len] = 0;
-        lexeme *l = create_lexeme(buf, IDENTIFIER);
-        return l;
-    }
-    else
-        return NULL;
+    return reg_exp(seq, get_signal1, transitions, INT_CONSTANT, finals, 1);
 }
 
 lexeme *find_oct_constant(char *seq)
 {
-    static state transitions[3][4] = {
-        [INITIAL][OTHER] = FAIL,
-        [INITIAL][ZERO] = FINAL,
-        [INITIAL][DIGIT] = FINAL,
-        [FINAL][OTHER] = FAIL,
-        [FINAL][ZERO] = FINAL,
-        [FINAL][DIGIT] = FINAL,
+    static state transitions[MAX_STATES][MAX_SIGNALS] = {
+        [STATE_0][OTHER] = STATE_9,
+        [STATE_0][ZERO] = STATE_1,
+        [STATE_0][DIGIT] = STATE_9,
+        [STATE_1][OTHER] = STATE_9,
+        [STATE_1][ZERO] = STATE_1,
+        [STATE_1][DIGIT] = STATE_1
     };
 
-    state st = INITIAL;
-    int len = 0;
-    char buf[LEXEME_SIZE];
-    while (st != FAIL)
-    {
-        signal sg = get_dec_signal(*seq);
-        st = transitions[st][sg];
-        buf[len++] = *seq;
-        seq++;
-    }
+    static state finals[1] = {STATE_1};
 
-    if (len > 1)
-    {
-        buf[len] = 0;
-        lexeme *l = create_lexeme(buf, IDENTIFIER);
-        return l;
-    }
-    else
-        return NULL;
+    return reg_exp(seq, get_signal1, transitions, INT_CONSTANT, finals, 1);
 }
+
+int get_signal2(char a)
+{
+    if (a == '0')
+        return ZERO;
+    else if (a == 'X' || a == 'x')
+        return X;
+    else if (isdigit(a) ||
+             (a > 'a' && a < 'f') ||
+             (a > 'A' && a < 'F'))
+        return DIGIT;
+    else
+        return OTHER;
+}
+
+lexeme *find_hex_constant(char *seq)
+{
+    static state transitions[MAX_STATES][MAX_SIGNALS] = {
+        [STATE_0][OTHER] = STATE_9,
+        [STATE_0][ZERO] = STATE_1,
+        [STATE_0][DIGIT] = STATE_9,
+        [STATE_0][X] = STATE_9,
+        [STATE_1][OTHER] = STATE_9,
+        [STATE_1][ZERO] = STATE_9,
+        [STATE_1][DIGIT] = STATE_9,
+        [STATE_1][X] = STATE_2,
+        [STATE_2][OTHER] = STATE_9,
+        [STATE_2][ZERO] = STATE_2,
+        [STATE_2][DIGIT] = STATE_2,
+        [STATE_2][X] = STATE_9,
+    };
+
+    static state finals[1] = {STATE_2};
+
+    return reg_exp(seq, get_signal2, transitions, INT_CONSTANT, finals, 1);
+}
+

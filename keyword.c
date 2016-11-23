@@ -2,12 +2,11 @@
 
 #include <stdlib.h>
 
-enum _signal
+typedef enum
 {
     OK,
     OTHER
-};
-typedef enum _signal signal;
+} signal;
 
 enum _state
 {

@@ -3,21 +3,21 @@
 
 #define LEXEME_SIZE 255
 
-enum _type
+typedef enum
 {
     KEYWORD,
-    IDENTIFIER
-};
-typedef enum _type type;
+    IDENTIFIER,
+    INT_CONSTANT,
+    FLOAT_CONSTANT
+} lexeme_type;
 
-struct _lexeme
+typedef struct
 {
     char s[LEXEME_SIZE];
-    type t;
+    lexeme_type t;
     int l;
-};
-typedef struct _lexeme lexeme;
+} lexeme;
 
-lexeme *create_lexeme(char *s, type t);
+lexeme *create_lexeme(char *s, lexeme_type t);
 
 #endif // TYPES_H
