@@ -6,8 +6,8 @@ lexeme *get_longest(lexeme *l[], int n)
 {
     lexeme *r = l[0];
     for (int i = 1; i < n; i++)
-        if ((l != NULL && r == NULL) ||
-            (l != NULL && r != NULL && l[i]->l > r->l))
+        if ((l[i] != NULL && r == NULL) ||
+            (l[i] != NULL && r != NULL && l[i]->l > r->l))
             r = l[i];
     return r;
 }
@@ -36,7 +36,7 @@ lexeme *reg_exp(char *seq, get_signal_func get_signal, state transitions[MAX_STA
     }
     if (is_final_state(prev_st, finals, n))
     {
-        buf[len] = 0;
+        buf[len-1] = 0;
         lexeme *l = create_lexeme(buf, type);
         return l;
     }
@@ -55,7 +55,7 @@ typedef enum
 static char* str_equal(char *a, char *b)
 {
     char *s = b;
-    while (a && b)
+    while (*a && *b)
     {
         if (*a != *b)
             return NULL;

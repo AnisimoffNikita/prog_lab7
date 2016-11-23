@@ -17,5 +17,5 @@ lexeme *find_punctuator(char *seq)
         "<<=", ">>=", "&=", "^=", "|=", ",", "#", "##"
     };
 
-    return reg_exp_compare(seq, KEYWORD, keys, n);
+    return reg_exp_compare(seq, PUNCTUATOR, keys, n);
 }

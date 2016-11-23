@@ -57,7 +57,7 @@ lexeme *find_oct_constant(char *seq)
     {
         if (a == '0')
             return ZERO;
-        else if (isdigit(a))
+        else if (a >= '0' && a <= '7')
             return DIGIT;
         else
             return OTHER;

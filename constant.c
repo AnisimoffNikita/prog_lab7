@@ -10,7 +10,7 @@
 
 lexeme *find_constant(char *seq)
 {
-    lexeme *a[3];
+    lexeme *a[3] = {NULL};
     a[0] = find_char_constant(seq);
     a[1] = find_int_constant(seq);
     a[1] = find_floating_constant(seq);
